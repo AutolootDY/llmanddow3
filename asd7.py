@@ -207,7 +207,7 @@ if portfolio_summary:
     st.dataframe(performance_df)
     
     fig_compare = px.line(performance_df, x='entry_date', y=['cum_return', 'NASDAQ_cum_return'],
-                          title="Cumulative Return: Portfolio vs Dow30",
+                          title="Cumulative Return: Portfolio vs NASDAQ",
                           labels={'entry_date': 'Rebalancing Date', 'value': 'Cumulative Return'},
                           markers=True)
     st.plotly_chart(fig_compare, use_container_width=True)
