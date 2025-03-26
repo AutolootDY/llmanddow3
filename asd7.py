@@ -8,7 +8,7 @@ st.title("Portfolio Status, Performance & Comparison Dashboard")
 # ระบุ path ของไฟล์ CSV
 csv_path = "./output_folder/merged_rolling_corr_with_adx_return.csv"
 filtered_csv_path = "./output_date/Cell output 2_filtered_t.csv"  # rebalancing dates
-dji_csv_path = "./index_date/DJI_filtered_return.csv"              # Dow30 data
+dji_csv_path = "./index_date/DJI_filtered_return.csv"              # NASDAQ data
 
 # อ่านข้อมูลจาก merged_rolling_corr_with_return.csv
 df = pd.read_csv(csv_path, parse_dates=['date_only'])
@@ -22,13 +22,13 @@ if df_filter.empty:
     st.error("ไฟล์ 2_filtered.csv ไม่มีข้อมูล rebalancing dates")
     st.stop()
 
-# อ่านข้อมูล Dow30 จาก DJI_filtered.csv โดย parse คอลัมน์ 'date'
+# อ่านข้อมูล NASDAQ จาก NASDAQ_filtered.csv โดย parse คอลัมน์ 'date'
 dji_df = pd.read_csv(dji_csv_path, parse_dates=['date'])
 if dji_df.empty:
     st.error("ไฟล์ DJI_filtered.csv ไม่มีข้อมูล")
     st.stop()
 
-# ตรวจสอบและคำนวณ daily return สำหรับ Dow30 ถ้ายังไม่มีคอลัมน์ 'return'
+# ตรวจสอบและคำนวณ daily return สำหรับ NASDAQ ถ้ายังไม่มีคอลัมน์ 'return'
 if 'return' not in dji_df.columns:
     dji_df.sort_values('date', inplace=True)
     dji_df['return'] = dji_df['close'].pct_change().fillna(0)
@@ -157,9 +157,9 @@ if portfolio_summary:
     # dji_returns_df = pd.DataFrame(dji_period_returns).sort_values('entry_date')
     # dji_returns_df['dji_cum_return'] = (1 + dji_returns_df['dji_period_return']).cumprod()
     
-    # --- เปรียบเทียบกับ Dow30 ---
+    # --- เปรียบเทียบกับ NASDAQ ---
     st.subheader("Comparison: Portfolio vs NASDAQ")
-    # คำนวณผลตอบแทนของ Dow30 ในแต่ละ rebalancing period
+    # คำนวณผลตอบแทนของ NASDAQ ในแต่ละ rebalancing period
     dji_df.sort_values('date', inplace=True)
 
     dji_period_returns = []
@@ -193,16 +193,16 @@ if portfolio_summary:
         st.write("Daily returns:", daily_returns_log)
         st.write("Computed period return:", f"{dji_return:.2%}")
 
-    # สร้าง DataFrame สำหรับผลตอบแทนของ Dow30
+    # สร้าง DataFrame สำหรับผลตอบแทนของ NASDAQ
     dji_returns_df = pd.DataFrame(dji_period_returns).sort_values('entry_date')
     dji_returns_df['NASDAQ_cum_return'] = (1 + dji_returns_df['NASDAQ_period_return']).cumprod()
 
-    # แสดงตารางที่มีทั้ง period return และ cumulative return ของ Dow30
+    # แสดงตารางที่มีทั้ง period return และ cumulative return ของ NASDAQ
     st.markdown("**NASDAQ Period Returns and Cumulative Returns**")
     st.dataframe(dji_returns_df[['entry_date', 'exit_date', 'NASDAQ_period_return', 'NASDAQ_cum_return']])
 
 
-    # Merge portfolio and Dow30 performance for comparison
+    # Merge portfolio and NASDAQ performance for comparison
     performance_df = period_returns_df.merge(dji_returns_df[['entry_date', 'NASDAQ_cum_return']], on='entry_date', how='left')
     st.dataframe(performance_df)
     
